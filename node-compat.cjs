@@ -13,3 +13,19 @@ if (typeof globalThis !== "undefined" && typeof window === "undefined") {
   delete globalThis.localStorage;
   delete globalThis.sessionStorage;
 }
+
+// Suppress Next.js 15.x HMR bug: ping keepalive events are not handled and
+// cause noisy unhandledRejection errors in the dev server console.
+// Suppress Next.js 15.x HMR bug: ping keepalive events are not handled and
+// cause noisy unhandledRejection errors in the dev server console.
+process.on("unhandledRejection", (reason) => {
+  if (
+    reason instanceof Error &&
+    reason.message.includes('unrecognized HMR message') &&
+    reason.message.includes('"event":"ping"')
+  ) {
+    return;
+  }
+  // For all other rejections, preserve Node's default behaviour.
+  throw reason;
+});
